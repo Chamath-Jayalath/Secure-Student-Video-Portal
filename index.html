@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Video Portal</title>
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+
+    .video-wrapper {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      aspect-ratio: 16 / 9;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    iframe.plyr__video-embed {
+      width: 100%;
+      height: 100%;
+    }
+
+    .block-overlay, .pause-shield {
+      position: absolute;
+      top: 0;
+      height: 60px;
+      z-index: 10;
+      background: transparent;
+      cursor: not-allowed;
+    }
+
+    .block-channel {
+      left: 0;
+      width: 120px;
+    }
+
+    .block-copy {
+      right: 0;
+      width: 100px;
+    }
+
+    .pause-shield {
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      display: none;
+    }
+
+    * {
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+  </style>
+</head>
+<body oncontextmenu="return false">
+
+  <h2>Student Video </h2>
+
+  <div class="video-wrapper" id="wrapper">
+    <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="pGTlSxmUyug"></div>
+    <div class="block-overlay block-channel"></div>
+    <div class="block-overlay block-copy"></div>
+    <div class="pause-shield" id="pauseShield"></div>
+  </div>
+
+  <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+  <script>
+    const player = new Plyr('#player', {
+      youtube: {
+        noCookie: true,
+        rel: 0,
+        modestbranding: 1
+      }
+    });
+
+    const pauseShield = document.getElementById("pauseShield");
+
+    // Global right-click block
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Show transparent shield when paused
+    player.on('pause', () => {
+      pauseShield.style.display = 'block';
+    });
+
+    player.on('play', () => {
+      pauseShield.style.display = 'none';
+    });
+
+    pauseShield.addEventListener('click', () => {
+      player.play();
+    });
+
+    // Block right-click in fullscreen mode
+    function addFullscreenBlock() {
+      const full = document.fullscreenElement || document.webkitFullscreenElement;
+      if (full) {
+        full.oncontextmenu = (e) => e.preventDefault();
+        full.appendChild(pauseShield);
+      }
+    }
+
+    document.addEventListener("fullscreenchange", addFullscreenBlock);
+    document.addEventListener("webkitfullscreenchange", addFullscreenBlock);
+  </script>
+
+</body>
+</html>
